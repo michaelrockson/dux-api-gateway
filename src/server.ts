@@ -13,6 +13,7 @@ import { ModuleEnvs } from "./bootstrap/envs/module.envs.js";
 import { WinstonLogger } from "./app/logger/winston.logger.js";
 import { ControllerResponseHandler } from "./app/http/handlers/response.handler.js";
 import { SharedDependencies } from "./bootstrap/bootstrap.types.js";
+import { provideGatewayMiddleware } from "./app/middleware/middleware.provider.js";
 
 async function startServer(): Promise<void> {
   try {
@@ -38,7 +39,8 @@ async function startServer(): Promise<void> {
 
     const port: number = Number(systemEnvs.port) || 3000;
     const environment: string = systemEnvs.environment ?? "dev";
-    const gatewayRouter = useGatewayRouters(controllers);
+    const middleware = provideGatewayMiddleware();
+    const gatewayRouter = useGatewayRouters(controllers, middleware);
 
     server.use(morgan("combined", { stream: createMorganStream(logger) }));
     server.use(express.json());
