@@ -11,6 +11,7 @@ import {
 } from "../app/interfaces/index.interface.js";
 import { AviationController } from "../modules/aviation/aviation.controller.js";
 import { AgroController } from "../modules/agriculture/agro.controller.js";
+import { AuthKeyController } from "../modules/auth/auth.controller.js";
 
 export type SharedDependencies = {
   systemEnvs: ISystemSecretsRegistry;
@@ -27,6 +28,7 @@ export type GatewayControllers = {
   sportsController: SportsController;
   aviationController: AviationController;
   argoController: AgroController;
+  authController: AuthKeyController;
 };
 
 export type ModuleControllersProvider =
@@ -39,4 +41,5 @@ export type ModuleControllersProvider =
   | { name: "holiday"; controller: HolidayController }
   | { name: "sports"; controller: SportsController }
   | { name: "aviation"; controller: AviationController }
-  | { name: "argo"; controller: AgroController };
+  | { name: "argo"; controller: AgroController }
+  | { name: "auth"; controller: AuthKeyController };

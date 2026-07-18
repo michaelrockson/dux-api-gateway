@@ -4,7 +4,7 @@ export interface IResponseHandler {
   handleRequest(
     req: Request,
     res: Response,
-    fetchFunction: (params?: any) => Promise<any>,
+    fetchFunction: (params?: any) => Promise<any> | unknown,
     responseKey: string,
     requiredParams?: string[],
   ): Promise<void>;

@@ -7,6 +7,7 @@ import { provideSportsRouter } from "./sports/sports.routes.js";
 import { GatewayControllers } from "../bootstrap/bootstrap.types.js";
 import { provideAviationRouter } from "./aviation/aviation.routes.js";
 import { provideAgroRouter } from "./agriculture/agro.routes.js";
+import { provideAuthRouter } from "./auth/auth.routes.js";
 
 export function useGatewayRouters(controllers: GatewayControllers): Router {
   const apiRouter = Router();
@@ -30,6 +31,7 @@ export function useGatewayRouters(controllers: GatewayControllers): Router {
     provideAviationRouter(controllers.aviationController),
   );
   apiRouter.use("/argo", provideAgroRouter(controllers.argoController));
+  apiRouter.use("/auth", provideAuthRouter(controllers.authController));
 
   return apiRouter;
 }
