@@ -3,14 +3,12 @@ export type AuthService = {
 };
 
 export type AuthRepo = {
-  storeHashedApiKey(keyId: string, hashedKey: string): void;
+  storeHashedApiKey(keyId: string, hashedKey: string, createdAt: string): void;
   getApiKey(keyId: string): string;
   deleteApiKey(keyId: string): void;
 };
 
 export interface ApiKeyResponse {
   apiKey: string;
-  keyId: string;
   createdAt: string;
 }
-

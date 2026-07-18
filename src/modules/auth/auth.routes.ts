@@ -6,7 +6,7 @@ export function provideAuthRouter(
 ): Router {
   const authRouter = Router();
 
-  authRouter.post("/gateway-key", async (req: Request, res: Response) => {
+  authRouter.get("/gateway-key", async (req: Request, res: Response) => {
     await authKeyController.handleApiKeyRequest(req, res);
   });
 

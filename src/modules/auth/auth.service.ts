@@ -12,20 +12,20 @@ export class AuthKeyService implements AuthService {
 
   constructor(authKeyRepository: AuthRepo) {
     this.length = 32;
-    this.prefix = "gateKey_";
+    this.prefix = "gw_";
     this.authKeyRepository = authKeyRepository;
   }
 
   createApiKey(): ApiKeyResponse {
     const keyId = crypto.randomBytes(6).toString("hex");
     const secret = crypto.randomBytes(this.length).toString("base64url");
-    const apiKey = `${this.prefix}${keyId}.${secret}`;
+    const apiKey = `${this.prefix}${secret}`;
 
     const hashedKey = crypto.createHash("sha256").update(secret).digest("hex");
     const createdAt = new Date().toISOString();
 
-    this.authKeyRepository.storeHashedApiKey(keyId, hashedKey);
+    this.authKeyRepository.storeHashedApiKey(keyId, hashedKey, createdAt);
 
-    return { apiKey, keyId, createdAt };
+    return { apiKey, createdAt };
   }
 }
