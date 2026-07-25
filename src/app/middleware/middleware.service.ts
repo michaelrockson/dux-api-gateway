@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import rateLimit from "express-rate-limit";
+import { RedisStore } from "rate-limit-redis";
 import { MiddlewareRepo } from "./middleware.repository.js";
+import type { ICache } from "../cache/cache.interface.js";
 
 export type GatewayMiddleware = {
   authenticateRequest(req: Request, res: Response, next: NextFunction): void;
@@ -11,7 +13,7 @@ export class MiddlewareService implements GatewayMiddleware {
   private readonly middlewareRepo: MiddlewareRepo;
   private readonly limiter: RequestHandler;
 
-  constructor(middlewareRepo: MiddlewareRepo) {
+  constructor(middlewareRepo: MiddlewareRepo, redisClient: ICache) {
     this.middlewareRepo = middlewareRepo;
     this.limiter = rateLimit({
       windowMs: 15 * 60 * 1000,
@@ -19,6 +21,11 @@ export class MiddlewareService implements GatewayMiddleware {
       standardHeaders: true,
       legacyHeaders: false,
       message: { error: "Too many requests, please try again later." },
+      store: new RedisStore({
+        sendCommand: (command: string, ...args: string[]) =>
+          redisClient.getClient().call(command, ...args) as Promise<number>,
+        prefix: "rl:",
+      }),
     });
   }
 
