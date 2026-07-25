@@ -1,8 +1,8 @@
 {
-  "name": "PublicServiceGateway",
+  "name": "Universal-API-Gateway",
   "version": "1.0.0",
   "main": "server.js",
-  "repository": "https://github.com/michaelrockson/Public-Service-Gateway.git",
+  "repository": "https://github.com/michaelrockson/Universal-API-Gateway.git",
   "author": "michaelrockson",
   "license": "MIT",
   "type": "module",
@@ -27,6 +27,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.6.0",
     "morgan": "^1.11.0",
     "winston": "^3.19.0"
   },

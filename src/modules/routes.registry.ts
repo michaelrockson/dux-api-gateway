@@ -16,6 +16,7 @@ export function useGatewayRouters(
 ): Router {
   const apiRouter = Router();
 
+  apiRouter.use(middleware.rateLimitRequest);
   apiRouter.use("/auth", provideAuthRouter(controllers.authController));
 
   apiRouter.use(middleware.authenticateRequest);

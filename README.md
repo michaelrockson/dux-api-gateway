@@ -37,8 +37,8 @@ Each integration follows the same modular provider / service / controller / rout
 
 **1. Clone the repository:**
 ```bash
-git clone https://github.com/michaelrockson/Public-Service-Gateway.git
-cd Public-Service-Gateway
+git clone https://github.com/michaelrockson/Universal-API-Gateway.git
+cd Universal-API-Gateway
 ```
 
 **2. Install dependencies:**

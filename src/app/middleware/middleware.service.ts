@@ -1,16 +1,34 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
+import rateLimit from "express-rate-limit";
 import { MiddlewareRepo } from "./middleware.repository.js";
 
 export type GatewayMiddleware = {
   authenticateRequest(req: Request, res: Response, next: NextFunction): void;
+  rateLimitRequest(req: Request, res: Response, next: NextFunction): void;
 };
 
 export class MiddlewareService implements GatewayMiddleware {
   private readonly middlewareRepo: MiddlewareRepo;
+  private readonly limiter: RequestHandler;
 
   constructor(middlewareRepo: MiddlewareRepo) {
     this.middlewareRepo = middlewareRepo;
+    this.limiter = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      limit: 100,
+      standardHeaders: true,
+      legacyHeaders: false,
+      message: { error: "Too many requests, please try again later." },
+    });
   }
+
+  rateLimitRequest = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): void => {
+    this.limiter(req, res, next);
+  };
 
   authenticateRequest = (
     req: Request,
