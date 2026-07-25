@@ -1,22 +1,37 @@
 import { InfisicalSDK } from "@infisical/sdk";
 import dotenv from "dotenv";
 import path from "path";
-import {
-  defaultLogger,
-  logProcess,
-  logProcessError,
-} from "../../app/logger/logger.utils.js";
+import { logProcess, logProcessError } from "../../app/logger/logger.utils.js";
 import {
   getEnvNumber,
   getEnvVar,
   validateEnvs,
   validateInfisicalSecrets,
 } from "../bootstrap.utils.js";
+import type { ICache } from "../../app/cache/cache.interface.js";
+import { provideRedisClient } from "../../app/cache/cache.provider.js";
+import type { ILogger } from "../../app/interfaces/infrastructure/logger.interface.js";
+import { GatewaySecrets, InfisicalConfig } from "../bootstrap.types.js";
 
-export async function injectSecretsFromInfisical() {
-  dotenv.config({ path: path.join(process.cwd(), ".env") });
+const SECRETS_CACHE_KEY = "gateway:secrets";
+const SECRETS_CACHE_TTL_SECONDS = 2700;
 
-  try {
+class SecretsBootstrapper {
+  private readonly logger: ILogger;
+  private client!: InfisicalSDK;
+  private config!: InfisicalConfig;
+  private redisUrl!: string;
+  private redisClient!: ICache;
+
+  constructor(logger: ILogger) {
+    this.logger = logger;
+  }
+
+  private loadEnvFile(): void {
+    dotenv.config({ path: path.join(process.cwd(), ".env") });
+  }
+
+  private readInfisicalConfig(): void {
     const siteUrl = getEnvVar("INFISICAL_SITE_URL");
     const clientId = getEnvVar("INFISICAL_CLIENT_ID");
     const clientSecret = getEnvVar("INFISICAL_CLIENT_SECRET");
@@ -25,30 +40,71 @@ export async function injectSecretsFromInfisical() {
 
     validateEnvs({ siteUrl, clientId, clientSecret, environment, projectId });
 
-    logProcess(defaultLogger, "Authenticating Infisical Client.....");
-    const client = new InfisicalSDK({ siteUrl });
-    const infisicalClient = await client.auth().universalAuth.login({
-      clientId,
-      clientSecret,
+    this.config = { siteUrl, clientId, clientSecret, environment, projectId };
+  }
+
+  private async authenticate(): Promise<void> {
+    logProcess(this.logger, "Authenticating Infisical Client.....");
+
+    this.client = new InfisicalSDK({ siteUrl: this.config.siteUrl });
+    const infisicalClient = await this.client.auth().universalAuth.login({
+      clientId: this.config.clientId,
+      clientSecret: this.config.clientSecret,
     });
+
     if (infisicalClient) {
-      logProcess(defaultLogger, "Infisical Client Authenticated!");
+      logProcess(this.logger, "Infisical Client Authenticated!");
+    }
+  }
+
+  private async provisionRedis(): Promise<void> {
+    logProcess(this.logger, "Fetching REDIS_URL from Infisical.....");
+
+    const redisSecretRes = await this.client.secrets().getSecret({
+      secretName: "REDIS_URL",
+      environment: this.config.environment,
+      projectId: this.config.projectId,
+    });
+
+    this.redisUrl = redisSecretRes.secretValue;
+    this.redisClient = await provideRedisClient(this.redisUrl, this.logger);
+  }
+
+  private async getCachedSecrets(): Promise<GatewaySecrets | null> {
+    const cached =
+      await this.redisClient.get<GatewaySecrets>(SECRETS_CACHE_KEY);
+
+    if (cached) {
+      logProcess(this.logger, "Infisical secrets cache HIT");
+      return cached;
     }
 
-    logProcess(defaultLogger, "Fetching Secrets from Infisical.....");
-    await client.secrets().listSecrets({
-      environment,
-      projectId,
+    logProcess(
+      this.logger,
+      "Infisical secrets cache MISSED fetching all secrets from Infisical.....",
+    );
+    return null;
+  }
+
+  private async fetchAllSecrets(): Promise<void> {
+    await this.client.secrets().listSecrets({
+      environment: this.config.environment,
+      projectId: this.config.projectId,
       attachToProcessEnv: true,
     });
+  }
 
-    const systemEnvs = {
+  private buildSystemEnvs(): GatewaySecrets["systemEnvs"] {
+    return {
       environment: getEnvVar("ENVIRONMENT", "dev"),
       port: getEnvNumber("PORT", 3000),
       logLevel: getEnvVar("LOG_LEVEL", "info"),
-    } as const;
+      redisUrl: this.redisUrl,
+    };
+  }
 
-    const moduleEnvs = {
+  private buildModuleEnvs(): GatewaySecrets["moduleEnvs"] {
+    return {
       weatherApiUrl: getEnvVar("WEATHER_API_URL", ""),
       weatherApiKey: getEnvVar("WEATHER_API_KEY", ""),
       newsApiUrl: getEnvVar("NEWS_API_URL", ""),
@@ -63,12 +119,62 @@ export async function injectSecretsFromInfisical() {
       agroApiUrl: getEnvVar("AGRO_API_URL", ""),
       agroApiKey: getEnvVar("AGRO_API_KEY", ""),
       agroPolygonId: getEnvVar("AGRO_POLYGON_ID", ""),
-    } as const;
+    };
+  }
 
+  private validateAndAssemble(
+    systemEnvs: GatewaySecrets["systemEnvs"],
+    moduleEnvs: GatewaySecrets["moduleEnvs"],
+  ): GatewaySecrets {
     validateInfisicalSecrets({ ...systemEnvs, ...moduleEnvs });
     return { systemEnvs, moduleEnvs };
-  } catch (error) {
-    logProcessError(defaultLogger, "injectSecretsFromInfisical", error);
-    throw new Error(`Error fetching secrets from Infisical: ${error}`);
   }
+
+  private async cacheSecrets(secrets: GatewaySecrets): Promise<void> {
+    try {
+      await this.redisClient.set(
+        SECRETS_CACHE_KEY,
+        secrets,
+        SECRETS_CACHE_TTL_SECONDS,
+      );
+      logProcess(
+        this.logger,
+        `Secrets cached in Redis (TTL: ${SECRETS_CACHE_TTL_SECONDS}s)`,
+      );
+    } catch (err) {
+      logProcessError(this.logger, "cacheSecrets", err);
+    }
+  }
+
+  async run(): Promise<{ secrets: GatewaySecrets; redisClient: ICache }> {
+    try {
+      this.loadEnvFile();
+      this.readInfisicalConfig();
+      await this.authenticate();
+      await this.provisionRedis();
+
+      const cached = await this.getCachedSecrets();
+      if (cached) {
+        return { secrets: cached, redisClient: this.redisClient };
+      }
+
+      await this.fetchAllSecrets();
+      const secrets = this.validateAndAssemble(
+        this.buildSystemEnvs(),
+        this.buildModuleEnvs(),
+      );
+      await this.cacheSecrets(secrets);
+
+      return { secrets, redisClient: this.redisClient };
+    } catch (error) {
+      logProcessError(this.logger, "bootstrapSecrets", error);
+      throw new Error(`Error bootstrapping secrets: ${error}`);
+    }
+  }
+}
+
+export async function bootstrapSecrets(
+  logger: ILogger,
+): Promise<{ secrets: GatewaySecrets; redisClient: ICache }> {
+  return new SecretsBootstrapper(logger).run();
 }

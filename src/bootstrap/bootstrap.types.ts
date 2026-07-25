@@ -11,12 +11,15 @@ import {
 } from "../app/interfaces/index.interface.js";
 import { AviationController } from "../modules/aviation/aviation.controller.js";
 import { AgroController } from "../modules/agriculture/agro.controller.js";
+import { AuthKeyController } from "../modules/auth/auth.controller.js";
+import { ICache } from "../app/cache/cache.interface.js";
 
 export type SharedDependencies = {
   systemEnvs: ISystemSecretsRegistry;
   moduleEnvs: IModuleSecretsRegistry;
   logger: ILogger;
   responseHandler: IResponseHandler;
+  redisClient: ICache;
 };
 
 export type GatewayControllers = {
@@ -27,6 +30,7 @@ export type GatewayControllers = {
   sportsController: SportsController;
   aviationController: AviationController;
   argoController: AgroController;
+  authController: AuthKeyController;
 };
 
 export type ModuleControllersProvider =
@@ -39,4 +43,38 @@ export type ModuleControllersProvider =
   | { name: "holiday"; controller: HolidayController }
   | { name: "sports"; controller: SportsController }
   | { name: "aviation"; controller: AviationController }
-  | { name: "argo"; controller: AgroController };
+  | { name: "argo"; controller: AgroController }
+  | { name: "auth"; controller: AuthKeyController };
+
+export type GatewaySecrets = {
+  systemEnvs: {
+    environment: string;
+    port: number;
+    logLevel: string;
+    redisUrl: string;
+  };
+  moduleEnvs: {
+    weatherApiUrl: string;
+    weatherApiKey: string;
+    newsApiUrl: string;
+    newsApiKey: string;
+    currencyApiUrl: string;
+    currencyApiKey: string;
+    holidayApiUrl: string;
+    sportsApiUrl: string;
+    sportsApiKey: string;
+    aviationApiUrl: string;
+    aviationApiKey: string;
+    agroApiUrl: string;
+    agroApiKey: string;
+    agroPolygonId: string;
+  };
+};
+
+export type InfisicalConfig = {
+  siteUrl: string;
+  clientId: string;
+  clientSecret: string;
+  environment: string;
+  projectId: string;
+};
