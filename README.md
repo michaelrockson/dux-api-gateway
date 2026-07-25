@@ -186,7 +186,7 @@ src/
 
 The gateway uses a layered architecture with constructor-injected dependencies. The startup sequence in `server.ts` enforces a strict initialization order:
 
-1. **Infisical bootstrap** `injectSecretsFromInfisical()` authenticates with Infisical and injects all runtime secrets into `process.env`, returning two typed config objects.
+1. **Infisical bootstrap** `bootstrapSecrets()` authenticates with Infisical and injects all runtime secrets into `process.env`, returning two typed config objects.
 2. **Config construction** `new SystemConfig(systemConfig)` and `new ModuleConfig(moduleConfig)` create immutable, typed config snapshots.
 3. **Infrastructure setup** `WinstonLogger`, `ControllerResponseHandler`, and `PrismaClient` are instantiated from the system config.
 4. **Controller boot** `bootGatewayControllers(sharedDependencies)` calls each module's provider function, which constructs its own `AxiosHttpClient`, service, and controller. All controllers are validated before the server starts.
