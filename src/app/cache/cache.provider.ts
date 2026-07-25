@@ -7,8 +7,6 @@ export async function provideRedisClient(
   redisUrl: string,
   logger: ILogger,
 ): Promise<ICache> {
-  logProcess(logger, "Connecting to Redis.....");
-
   try {
     const redisClient = new RedisClient(redisUrl, logger);
     await redisClient.connect();

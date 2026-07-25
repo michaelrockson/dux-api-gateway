@@ -9,7 +9,7 @@ import {
 export function provideAuthController(
   deps: SharedDependencies,
 ): Extract<ModuleControllersProvider, { name: "auth" }> {
-  const authKeyRepo = new AuthRepository();
+  const authKeyRepo = new AuthRepository(deps.prismaClient);
   const authKeyService = new AuthKeyService(authKeyRepo);
   const authKeyController = new AuthKeyController(
     authKeyService,
@@ -21,3 +21,4 @@ export function provideAuthController(
     controller: authKeyController,
   };
 }
+

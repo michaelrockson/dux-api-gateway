@@ -14,6 +14,7 @@ import { WinstonLogger } from "./app/logger/winston.logger.js";
 import { ControllerResponseHandler } from "./app/http/handlers/response.handler.js";
 import { SharedDependencies } from "./bootstrap/bootstrap.types.js";
 import { provideGatewayMiddleware } from "./app/middleware/middleware.provider.js";
+import { providePrismaClient } from "./app/db/prisma.js";
 
 async function startServer(): Promise<void> {
   try {
@@ -27,12 +28,15 @@ async function startServer(): Promise<void> {
       systemEnvs.environment,
     );
 
+    const prismaClient = providePrismaClient(systemEnvs.databaseUrl);
+
     const sharedDependencies: SharedDependencies = {
       systemEnvs,
       moduleEnvs,
       logger,
       responseHandler,
       redisClient,
+      prismaClient,
     };
 
     const controllers = bootGatewayControllers(sharedDependencies);
@@ -41,7 +45,7 @@ async function startServer(): Promise<void> {
 
     const port: number = Number(systemEnvs.port) || 3000;
     const environment: string = systemEnvs.environment ?? "dev";
-    const middleware = provideGatewayMiddleware(redisClient);
+    const middleware = provideGatewayMiddleware(redisClient, prismaClient);
     const gatewayRouter = useGatewayRouters(controllers, middleware);
 
     server.use(morgan("combined", { stream: createMorganStream(logger) }));
