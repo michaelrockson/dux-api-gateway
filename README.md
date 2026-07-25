@@ -10,8 +10,10 @@ An API gateway for public services built on Express 5 and TypeScript. The gatewa
 - Config split into two typed objects: `SystemConfig` (server/logger settings) and `ModuleConfig` (per-module API keys and URLs)
 - Secrets management via Infisical SDK zero secrets in source control
 - Shared `AxiosHttpClient` and `ControllerResponseHandler` used across all modules
+- API Key authentication and Rate Limiting (100 req/15 min) via Gateway Middleware
+- PostgreSQL database integration via Prisma for securely hashing and storing API keys
 - Structured JSON logging via Winston, with Morgan piped through it
-- Seven fully implemented modules: **Weather**, **News**, **Currency**, **Public Holidays**, **Sports**, **Aviation**, **Agriculture**
+- Eight fully implemented modules: **Auth**, **Weather**, **News**, **Currency**, **Public Holidays**, **Sports**, **Aviation**, **Agriculture**
 
 ## External APIs
 
@@ -31,6 +33,7 @@ Each integration follows the same modular provider / service / controller / rout
 
 - Node.js 20+
 - yarn
+- PostgreSQL database
 - An [Infisical](https://infisical.com/) project containing the runtime secrets listed in the [Setup](#setup) section
 
 ## Setup
@@ -57,6 +60,8 @@ INFISICAL_PROJECT_ID=<your-project-id>
 
 These five values are the only secrets that live locally. Everything else is fetched from Infisical at startup.
 
+> **Note for Local DB Setup:** To run Prisma CLI commands locally (like `prisma migrate dev`), you must also add your `DATABASE_URL` to the `.env` file. However, the runtime server will fetch `DATABASE_URL` securely from Infisical.
+
 **4. Add the following secrets to your Infisical project:**
 
 *System config:*
@@ -80,10 +85,17 @@ SPORTS_API_KEY
 AVIATION_API_URL
 AVIATION_API_KEY
 AGRO_API_URL
+AGRO_API_URL
 AGRO_API_KEY
+DATABASE_URL
 ```
 
 See the [Environment Variables](#environment-variables) section for the purpose of each key.
+
+**5. Initialize Database:**
+```bash
+yarn prisma migrate dev
+```
 
 ## Running Locally
 
@@ -107,8 +119,11 @@ All endpoints are documented in **[docs/Routes.md](docs/Routes.md)**, including 
 
 Base URL for local testing: `http://localhost:3000`
 
+> **Note:** Except for `/v1/auth/gateway-key`, all routes require a valid API key passed via the `x-api-key` or `Authorization` (Bearer) header.
+
 | Module | Base path |
 |---|---|
+| Auth | `/v1/auth` |
 | Weather | `/v1/weather` |
 | News | `/v1/news` |
 | Currency | `/v1/currency` |
@@ -134,6 +149,7 @@ src/
 │   │   ├── weather.routes.ts            # Route definitions
 │   │   └── weather.types.ts             # Request param and response types
 │   │
+│   ├── auth/                            # API Key generation (Prisma)
 │   ├── news/                            # NewsAPI integration
 │   ├── currency/                        # Currencylayer integration
 │   ├── holidays/                        # Nager.Date integration
@@ -148,10 +164,14 @@ src/
 │   └── bootstrap.utils.ts               # bootGatewayControllers, getEnvVar, validateEnvs, etc.
 │
 └── app/                                 # Cross-cutting infrastructure
+    ├── db/
+    │   └── prisma.ts                    # PrismaClient factory
     ├── http/
     │   ├── clients/                     # AxiosHttpClient (implements IHttpClient)
     │   ├── handlers/                    # ControllerResponseHandler (implements IResponseHandler)
     │   └── request.utils.ts             # Error classes (e.g. BadRequestError), validation, and parsing
+    │
+    ├── middleware/                      # Rate limiting & Postgres-based Auth logic
     │
     ├── interfaces/
     │   ├── config/                      # Per-concern config interfaces (ISystemConfig, IModuleConfig, etc.)
@@ -168,9 +188,9 @@ The gateway uses a layered architecture with constructor-injected dependencies. 
 
 1. **Infisical bootstrap** `injectSecretsFromInfisical()` authenticates with Infisical and injects all runtime secrets into `process.env`, returning two typed config objects.
 2. **Config construction** `new SystemConfig(systemConfig)` and `new ModuleConfig(moduleConfig)` create immutable, typed config snapshots.
-3. **Infrastructure setup** `WinstonLogger` and `ControllerResponseHandler` are instantiated from the system config.
+3. **Infrastructure setup** `WinstonLogger`, `ControllerResponseHandler`, and `PrismaClient` are instantiated from the system config.
 4. **Controller boot** `bootGatewayControllers(sharedDependencies)` calls each module's provider function, which constructs its own `AxiosHttpClient`, service, and controller. All controllers are validated before the server starts.
-5. **Router mount** `useGatewayRouters(controllers)` passes each controller into its module's router factory and mounts them all under `/v1`.
+5. **Router mount** `useGatewayRouters(controllers, middleware)` passes each controller into its module's router factory and mounts them all under `/v1` (protected by rate limiting and API key auth).
 6. **Server start** `server.listen(port)`.
 
 No service or controller is instantiated at module load time. All construction happens inside provider functions, which only run after the config objects are ready.
