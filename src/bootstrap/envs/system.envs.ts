@@ -15,4 +15,3 @@ export class SystemEnvs implements ISystemSecretsRegistry {
     this.databaseUrl = systemEnvs.databaseUrl;
   }
 }
-

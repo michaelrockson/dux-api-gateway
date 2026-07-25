@@ -6,25 +6,28 @@ export class AuthRepository implements AuthRepo {
 
   async getApiKey(keyId: string): Promise<string | null> {
     const key = await this.prisma.apiKey.findUnique({
-      where: { keyId }
+      where: { keyId },
     });
     return key ? key.hashedKey : null;
   }
 
-  async storeHashedApiKey(keyId: string, hashedKey: string, createdAt: string): Promise<void> {
+  async storeHashedApiKey(
+    keyId: string,
+    hashedKey: string,
+    createdAt: string,
+  ): Promise<void> {
     await this.prisma.apiKey.create({
       data: {
         keyId,
         hashedKey,
-        createdAt: new Date(createdAt)
-      }
+        createdAt: new Date(createdAt),
+      },
     });
   }
 
   async deleteApiKey(keyId: string): Promise<void> {
     await this.prisma.apiKey.delete({
-      where: { keyId }
+      where: { keyId },
     });
   }
 }
-

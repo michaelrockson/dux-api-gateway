@@ -5,8 +5,16 @@ import { MiddlewareRepo } from "./middleware.repository.js";
 import type { ICache } from "../cache/cache.interface.js";
 
 export type GatewayMiddleware = {
-  authenticateRequest(req: Request, res: Response, next: NextFunction): void | Promise<void>;
-  rateLimitRequest(req: Request, res: Response, next: NextFunction): void | Promise<void>;
+  authenticateRequest(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): void | Promise<void>;
+  rateLimitRequest(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): void | Promise<void>;
 };
 
 export class MiddlewareService implements GatewayMiddleware {

@@ -3,7 +3,11 @@ export type AuthService = {
 };
 
 export type AuthRepo = {
-  storeHashedApiKey(keyId: string, hashedKey: string, createdAt: string): Promise<void>;
+  storeHashedApiKey(
+    keyId: string,
+    hashedKey: string,
+    createdAt: string,
+  ): Promise<void>;
   getApiKey(keyId: string): Promise<string | null>;
   deleteApiKey(keyId: string): Promise<void>;
 };
