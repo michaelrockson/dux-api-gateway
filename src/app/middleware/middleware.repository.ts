@@ -1,11 +1,16 @@
+import { prisma } from "../db/prisma.js";
+
 export type MiddlewareRepo = {
-  checkClientApiKey(apiKey: string): boolean;
+  checkClientApiKey(apiKey: string): Promise<boolean>;
 };
 
 export class MiddlewareRepository implements MiddlewareRepo {
-  checkClientApiKey(apiKey: string): boolean {
-    // Basic implementation for checking client API key.
-    // In a complete implementation, this would verify the key against a database or AuthRepo.
-    return typeof apiKey === "string" && apiKey.startsWith("gw_");
+  async checkClientApiKey(apiKey: string): Promise<boolean> {
+    if (typeof apiKey !== "string" || !apiKey.startsWith("gw_")) return false;
+    
+    const key = await prisma.apiKey.findFirst({
+      where: { keyId: apiKey }
+    });
+    return !!key;
   }
 }

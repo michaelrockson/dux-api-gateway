@@ -10,4 +10,3 @@ export function provideGatewayMiddleware(redisClient: ICache) {
 
   return new MiddlewareService(middlewareRepo, redisClient);
 }
-

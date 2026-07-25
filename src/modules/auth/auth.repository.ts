@@ -1,16 +1,27 @@
 import { AuthRepo } from "../../app/interfaces/modules/auth.module.interface.js";
+import { prisma } from "../../app/db/prisma.js";
 
 export class AuthRepository implements AuthRepo {
-  getApiKey(keyId: string): string {
-    // Implementation for retrieving API key
-    return "";
+  async getApiKey(keyId: string): Promise<string | null> {
+    const key = await prisma.apiKey.findUnique({
+      where: { keyId }
+    });
+    return key ? key.hashedKey : null;
   }
 
-  storeHashedApiKey(keyId: string, hashedKey: string, createdAt: string): void {
-    // Implementation for storing hashed API key
+  async storeHashedApiKey(keyId: string, hashedKey: string, createdAt: string): Promise<void> {
+    await prisma.apiKey.create({
+      data: {
+        keyId,
+        hashedKey,
+        createdAt: new Date(createdAt)
+      }
+    });
   }
 
-  deleteApiKey(keyId: string): void {
-    // Implementation for deleting API key
+  async deleteApiKey(keyId: string): Promise<void> {
+    await prisma.apiKey.delete({
+      where: { keyId }
+    });
   }
 }

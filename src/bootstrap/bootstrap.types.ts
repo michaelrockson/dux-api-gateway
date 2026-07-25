@@ -49,6 +49,7 @@ export type ModuleControllersProvider =
 export type GatewaySecrets = {
   systemEnvs: {
     environment: string;
+    databaseUrl: string;
     port: number;
     logLevel: string;
     redisUrl: string;

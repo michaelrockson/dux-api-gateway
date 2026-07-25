@@ -1,12 +1,12 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 import rateLimit from "express-rate-limit";
 import { RedisStore } from "rate-limit-redis";
 import { MiddlewareRepo } from "./middleware.repository.js";
 import type { ICache } from "../cache/cache.interface.js";
 
 export type GatewayMiddleware = {
-  authenticateRequest(req: Request, res: Response, next: NextFunction): void;
-  rateLimitRequest(req: Request, res: Response, next: NextFunction): void;
+  authenticateRequest(req: Request, res: Response, next: NextFunction): void | Promise<void>;
+  rateLimitRequest(req: Request, res: Response, next: NextFunction): void | Promise<void>;
 };
 
 export class MiddlewareService implements GatewayMiddleware {
@@ -37,11 +37,11 @@ export class MiddlewareService implements GatewayMiddleware {
     this.limiter(req, res, next);
   };
 
-  authenticateRequest = (
+  authenticateRequest = async (
     req: Request,
     res: Response,
     next: NextFunction,
-  ): void => {
+  ): Promise<void> => {
     try {
       const apiKey =
         (req.headers["x-api-key"] as string) ||
@@ -52,7 +52,7 @@ export class MiddlewareService implements GatewayMiddleware {
         return;
       }
 
-      const isValid = this.middlewareRepo.checkClientApiKey(apiKey);
+      const isValid = await this.middlewareRepo.checkClientApiKey(apiKey);
       if (!isValid) {
         res.status(403).json({ error: "Forbidden: Invalid API key" });
         return;

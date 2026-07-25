@@ -16,7 +16,7 @@ export class AuthKeyService implements AuthService {
     this.authKeyRepository = authKeyRepository;
   }
 
-  createApiKey(): ApiKeyResponse {
+  async createApiKey(): Promise<ApiKeyResponse> {
     const keyId = crypto.randomBytes(6).toString("hex");
     const secret = crypto.randomBytes(this.length).toString("base64url");
     const apiKey = `${this.prefix}${secret}`;
@@ -24,7 +24,7 @@ export class AuthKeyService implements AuthService {
     const hashedKey = crypto.createHash("sha256").update(secret).digest("hex");
     const createdAt = new Date().toISOString();
 
-    this.authKeyRepository.storeHashedApiKey(keyId, hashedKey, createdAt);
+    await this.authKeyRepository.storeHashedApiKey(keyId, hashedKey, createdAt);
 
     return { apiKey, createdAt };
   }

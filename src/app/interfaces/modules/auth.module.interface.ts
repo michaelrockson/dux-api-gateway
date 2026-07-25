@@ -1,11 +1,11 @@
 export type AuthService = {
-  createApiKey(): ApiKeyResponse;
+  createApiKey(): Promise<ApiKeyResponse>;
 };
 
 export type AuthRepo = {
-  storeHashedApiKey(keyId: string, hashedKey: string, createdAt: string): void;
-  getApiKey(keyId: string): string;
-  deleteApiKey(keyId: string): void;
+  storeHashedApiKey(keyId: string, hashedKey: string, createdAt: string): Promise<void>;
+  getApiKey(keyId: string): Promise<string | null>;
+  deleteApiKey(keyId: string): Promise<void>;
 };
 
 export interface ApiKeyResponse {
