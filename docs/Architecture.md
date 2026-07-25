@@ -26,7 +26,7 @@ the shared type system, and the conventions to follow when adding new modules.
 
 ## 1. Project Overview
 
-Public Services API Gateway is a TypeScript/Express API gateway that
+Universal API Gateway is a TypeScript/Express API gateway that
 aggregates seven third-party public data APIs weather, news, currency,
 holidays, sports, aviation, and agriculture behind a single, unified interface mounted at `/v1`.
 
