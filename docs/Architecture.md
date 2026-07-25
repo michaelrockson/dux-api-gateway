@@ -170,7 +170,7 @@ on the previous one completing successfully.
 ```
 startServer()
 │
-├── 1. injectSecretsFromInfisical()
+├── 1. bootstrapSecrets()
 │         Reads the five Infisical bootstrap variables from the local .env via
 │         dotenv.config(). Authenticates with the Infisical SDK using
 │         universal auth, calls listSecrets() with attachToProcessEnv: true,
