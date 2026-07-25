@@ -131,12 +131,19 @@ src/
 │   └── bootstrap.utils.ts               # bootGatewayControllers(), getEnvVar/Number, validateEnvs, etc.
 │
 └── app/                                 # Cross-cutting infrastructure
+    ├── db/
+    │   └── prisma.ts                    # PrismaClient factory
     ├── http/
     │   ├── clients/                     # HTTP clients
     │   │   └── axios.client.ts              # AxiosHttpClient (implements IHttpClient)
     │   ├── handlers/                    # Response handlers
     │   │   └── response.handler.ts          # ControllerResponseHandler (implements IResponseHandler)
     │   └── request.utils.ts             # Error classes (e.g. BadRequestError), validation, and parsing
+    │
+    ├── middleware/
+    │   ├── middleware.provider.ts       # GatewayMiddleware provider
+    │   ├── middleware.repository.ts     # Postgres API Key validation
+    │   └── middleware.service.ts        # Rate limiting and Auth logic
     │
     ├── interfaces/
     │   ├── config/                      # Per-concern config interfaces
@@ -192,21 +199,24 @@ startServer()
 │         Takes the environment string directly to determine error verbosity
 │         in non-2xx responses.
 │
-├── 6. bootGatewayControllers(sharedDependencies)
-│         Packages the four shared instances into a SharedDependencies object
-│         ({ systemConfig, moduleConfig, logger, responseHandler }) and calls
+├── 6. providePrismaClient(systemConfig.databaseUrl)
+│         Constructs the PrismaClient for database interactions (PostgreSQL).
+│
+├── 7. bootGatewayControllers(sharedDependencies)
+│         Packages the five shared instances into a SharedDependencies object
+│         ({ systemConfig, moduleConfig, logger, responseHandler, prismaClient }) and calls
 │         registerGatewayControllers(deps), which invokes each module's
 │         provider function. Each provider constructs its AxiosHttpClient,
 │         Service and Controller using the injected deps.
 │         validateGatewayControllers() asserts all controller instances are
 │         truthy before returning GatewayControllers.
 │
-├── 7. useGatewayRouters(controllers)
-│         Receives the live GatewayControllers map. Passes each controller
-│         into its module's router factory, mounts all routers under /v1,
-│         and returns the configured Express Router.
+├── 8. useGatewayRouters(controllers, middleware)
+│         Receives the live GatewayControllers map and GatewayMiddleware. Passes each controller
+│         into its module's router factory, mounts all routers under /v1 (protected by auth
+│         and rate-limiting), and returns the configured Express Router.
 │
-└── 8. server.listen(port)
+└── 9. server.listen(port)
           Server is live. Incoming requests flow:
           Express → gatewayRouter → module router → controller → service.
 ```
@@ -235,7 +245,7 @@ WinstonLogger   ControllerResponseHandler │
     └───────┬────────┘                    │
             ▼                             │
      SharedDependencies ←─────────────────┘
-     { systemConfig, moduleConfig, logger, responseHandler }
+     { systemConfig, moduleConfig, logger, responseHandler, prismaClient }
             │
             ▼
      Provider functions        (construct AxiosHttpClient → Service → Controller)
@@ -358,12 +368,14 @@ const systemConfig    = new SystemConfig(serverSecrets.systemConfig);   // ISyst
 const moduleConfig    = new ModuleConfig(serverSecrets.moduleConfig);   // IModuleConfig
 const logger          = new WinstonLogger(systemConfig);                   // ILogger
 const responseHandler = new ControllerResponseHandler(systemConfig.environment); // IResponseHandler
+const prismaClient    = providePrismaClient(systemConfig.databaseUrl); // PrismaClient
 
 const sharedDependencies: SharedDependencies = {
   systemConfig,
   moduleConfig,
   logger,
   responseHandler,
+  prismaClient,
 };
 ```
 
@@ -761,6 +773,7 @@ export type SharedDependencies = {
   moduleConfig:    IModuleConfig;
   logger:          ILogger;
   responseHandler: IResponseHandler;
+  prismaClient:    PrismaClient;
 };
 ```
 

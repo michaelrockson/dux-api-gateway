@@ -2,27 +2,70 @@
 
 A complete reference for all endpoints exposed by the Public Services Gateway, with ready-to-use Postman examples.
 
-All routes are versioned under `/v1`. No authentication headers are required from the client the gateway handles upstream API authentication automatically using secrets fetched from Infisical at startup.
+All routes are versioned under `/v1` and are protected by rate limiting (100 requests per 15 minutes) and API key authentication. The gateway handles upstream API authentication automatically using secrets fetched from Infisical at startup.
+
+## Authentication
+
+All endpoints (except `/v1/auth/gateway-key`) require a valid API key. You can pass the API key via one of two headers:
+- `x-api-key: gw_<secret>`
+- `Authorization: Bearer gw_<secret>`
+
+To generate a key, use the `/v1/auth/gateway-key` endpoint.
 
 ## Postman Setup
 
 1. Create a Postman **Environment** and add the variable:
    ```
    baseUrl = http://localhost:3000
+   apiKey = gw_<your_secret_key>
    ```
-2. Use `{{baseUrl}}` as a prefix in all requests below.
-3. No `Authorization` headers or API keys are needed in any request.
+2. Set up authorization in Postman to use an `API Key` in the Header with key `x-api-key` and value `{{apiKey}}`.
+3. Use `{{baseUrl}}` as a prefix in all requests below.
 
 
 ## Table of Contents
 
-1. [Weather](#1-weather----v1weather)
-2. [News](#2-news----v1news)
-3. [Currency](#3-currency----v1currency)
-4. [Public Holidays](#4-public-holidays----v1holiday)
-5. [Sports](#5-sports----v1sports)
-6. [Aviation](#6-aviation----v1aviation)
-7. [Agriculture](#7-agriculture----v1argo)
+1. [Auth](#1-auth----v1auth)
+2. [Weather](#2-weather----v1weather)
+3. [News](#3-news----v1news)
+4. [Currency](#4-currency----v1currency)
+5. [Public Holidays](#5-public-holidays----v1holiday)
+6. [Sports](#6-sports----v1sports)
+7. [Aviation](#7-aviation----v1aviation)
+8. [Agriculture](#8-agriculture----v1argo)
+
+
+---
+
+## 1. Auth — `/v1/auth`
+
+| Method | Endpoint | Required params | Optional params |
+|---|---|---|---|
+| GET | `/v1/auth/gateway-key` | None | None |
+
+---
+
+### GET /v1/auth/gateway-key
+
+Generates a new API key that can be used to authenticate with all other gateway endpoints.
+
+**Postman Example**
+```
+GET {{baseUrl}}/v1/auth/gateway-key
+```
+
+**Successful Response** `200 OK`
+```json
+{
+  "message": "Data fetched successfully",
+  "details": {
+    "ApiKeyResponse": {
+      "apiKey": "gw_xY...z9Q",
+      "createdAt": "2026-07-25T12:00:00.000Z"
+    }
+  }
+}
+```
 
 
 ---

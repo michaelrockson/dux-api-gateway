@@ -1,11 +1,22 @@
+import { PrismaClient } from "../../generated/prisma/client.js";
+import crypto from "node:crypto";
+
 export type MiddlewareRepo = {
-  checkClientApiKey(apiKey: string): boolean;
+  checkClientApiKey(apiKey: string): Promise<boolean>;
 };
 
 export class MiddlewareRepository implements MiddlewareRepo {
-  checkClientApiKey(apiKey: string): boolean {
-    // Basic implementation for checking client API key.
-    // In a complete implementation, this would verify the key against a database or AuthRepo.
-    return typeof apiKey === "string" && apiKey.startsWith("gw_");
+  constructor(private readonly prisma: PrismaClient) {}
+
+  async checkClientApiKey(apiKey: string): Promise<boolean> {
+    if (typeof apiKey !== "string" || !apiKey.startsWith("gw_")) return false;
+
+    const secret = apiKey.slice(3);
+    const hashedKey = crypto.createHash("sha256").update(secret).digest("hex");
+
+    const key = await this.prisma.apiKey.findFirst({
+      where: { hashedKey },
+    });
+    return !!key;
   }
 }

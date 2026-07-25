@@ -3,7 +3,6 @@ import type { ICache } from "./cache.interface.js";
 import type { ILogger } from "../interfaces/infrastructure/logger.interface.js";
 import { logProcess, logProcessError } from "../logger/logger.utils.js";
 
-
 export class RedisClient implements ICache {
   private readonly client: Redis;
   private readonly logger: ILogger;
@@ -38,7 +37,6 @@ export class RedisClient implements ICache {
     await this.client.ping();
     logProcess(this.logger, "Redis ping successful");
   }
-
 
   async get<T>(key: string): Promise<T | null> {
     const raw = await this.client.get(key);

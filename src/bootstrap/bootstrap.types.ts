@@ -13,6 +13,7 @@ import { AviationController } from "../modules/aviation/aviation.controller.js";
 import { AgroController } from "../modules/agriculture/agro.controller.js";
 import { AuthKeyController } from "../modules/auth/auth.controller.js";
 import { ICache } from "../app/cache/cache.interface.js";
+import { PrismaClient } from "../generated/prisma/client.js";
 
 export type SharedDependencies = {
   systemEnvs: ISystemSecretsRegistry;
@@ -20,6 +21,7 @@ export type SharedDependencies = {
   logger: ILogger;
   responseHandler: IResponseHandler;
   redisClient: ICache;
+  prismaClient: PrismaClient;
 };
 
 export type GatewayControllers = {
@@ -49,6 +51,7 @@ export type ModuleControllersProvider =
 export type GatewaySecrets = {
   systemEnvs: {
     environment: string;
+    databaseUrl: string;
     port: number;
     logLevel: string;
     redisUrl: string;

@@ -12,7 +12,9 @@ import { IAgroConfig } from "./modules/agro.module.interface.js";
 /**
  * System-level config (port, secrets, log levels).
  */
-export type ISystemSecretsRegistry = IServerConfig & ILoggerConfig & IRedisConfig;
+export type ISystemSecretsRegistry = IServerConfig &
+  ILoggerConfig &
+  IRedisConfig;
 
 /**
  * Module-level config (API URLs, keys, etc.).

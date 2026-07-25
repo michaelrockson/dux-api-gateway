@@ -27,6 +27,32 @@ class SecretsBootstrapper {
     this.logger = logger;
   }
 
+  async run(): Promise<{ secrets: GatewaySecrets; redisClient: ICache }> {
+    try {
+      this.loadEnvFile();
+      this.readInfisicalConfig();
+      await this.authenticate();
+      await this.provisionRedis();
+
+      const cached = await this.getCachedSecrets();
+      if (cached) {
+        return { secrets: cached, redisClient: this.redisClient };
+      }
+
+      await this.fetchAllSecrets();
+      const secrets = this.validateAndAssemble(
+        this.buildSystemEnvs(),
+        this.buildModuleEnvs(),
+      );
+      await this.cacheSecrets(secrets);
+
+      return { secrets, redisClient: this.redisClient };
+    } catch (error) {
+      logProcessError(this.logger, "bootstrapSecrets", error);
+      throw new Error(`Error bootstrapping secrets: ${error}`);
+    }
+  }
+
   private loadEnvFile(): void {
     dotenv.config({ path: path.join(process.cwd(), ".env") });
   }
@@ -97,6 +123,7 @@ class SecretsBootstrapper {
   private buildSystemEnvs(): GatewaySecrets["systemEnvs"] {
     return {
       environment: getEnvVar("ENVIRONMENT", "dev"),
+      databaseUrl: getEnvVar("DATABASE_URL", ""),
       port: getEnvNumber("PORT", 3000),
       logLevel: getEnvVar("LOG_LEVEL", "info"),
       redisUrl: this.redisUrl,
@@ -143,32 +170,6 @@ class SecretsBootstrapper {
       );
     } catch (err) {
       logProcessError(this.logger, "cacheSecrets", err);
-    }
-  }
-
-  async run(): Promise<{ secrets: GatewaySecrets; redisClient: ICache }> {
-    try {
-      this.loadEnvFile();
-      this.readInfisicalConfig();
-      await this.authenticate();
-      await this.provisionRedis();
-
-      const cached = await this.getCachedSecrets();
-      if (cached) {
-        return { secrets: cached, redisClient: this.redisClient };
-      }
-
-      await this.fetchAllSecrets();
-      const secrets = this.validateAndAssemble(
-        this.buildSystemEnvs(),
-        this.buildModuleEnvs(),
-      );
-      await this.cacheSecrets(secrets);
-
-      return { secrets, redisClient: this.redisClient };
-    } catch (error) {
-      logProcessError(this.logger, "bootstrapSecrets", error);
-      throw new Error(`Error bootstrapping secrets: ${error}`);
     }
   }
 }
