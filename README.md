@@ -1,4 +1,4 @@
-# Universal API Gateway 
+# Dux API Gateway 
 
 An API gateway for public services built on Express 5 and TypeScript. The gateway aggregates seven public APIs weather, news, currency, public holidays, sports, aviation, and agriculture behind a single, versioned interface mounted at `/v1`. Secrets and runtime configuration are managed via [Infisical](https://infisical.com/) no API keys are stored locally beyond the five credentials needed to bootstrap the Infisical connection.
 
