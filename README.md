@@ -40,8 +40,8 @@ Each integration follows the same modular provider / service / controller / rout
 
 **1. Clone the repository:**
 ```bash
-git clone https://github.com/michaelrockson/Dux-API-Gateway.git
-cd Dux-API-Gateway
+git clone https://github.com/michaelrockson/dux-api-gateway.git
+cd dux-api-gateway
 ```
 
 **2. Install dependencies:**
