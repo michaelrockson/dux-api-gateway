@@ -103,7 +103,7 @@ export const SPORTS_ENDPOINTS: Endpoint[] = [
       return {
         kind: "hero",
         kicker: [league.strSport, league.strCountry].filter(Boolean).join(" · "),
-        big: league.strLeague ?? "—",
+        big: league.strLeague ?? "-",
         sub: league.idLeague ? `League ID ${league.idLeague}` : "",
         stats: [],
       };

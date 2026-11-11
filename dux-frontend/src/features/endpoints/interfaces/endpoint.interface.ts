@@ -62,6 +62,6 @@ export interface ListRow {
 
 export interface ListView {
   kind: "list";
-  caption: string;
+  caption?: string;
   rows: ListRow[];
 }

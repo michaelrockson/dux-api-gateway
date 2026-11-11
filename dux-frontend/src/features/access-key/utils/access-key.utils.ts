@@ -1,6 +1,6 @@
 export function maskKey(key: string): string {
   if (key.length <= 10) return "•".repeat(key.length);
-  return `${key.slice(0, 7)}${"•".repeat(Math.max(6, key.length - 10))}${key.slice(-3)}`;
+  return `${key.slice(0, 7)}${"•".repeat(12)}${key.slice(-3)}`;
 }
 
 export function shortenKey(key: string): string {

@@ -16,7 +16,6 @@ export interface AccessKeyState extends StoredAccessKey {
 export interface AuthModeOption {
   id: AuthMode;
   title: string;
-  description: string;
 }
 
 export interface ApiKeyResponse {

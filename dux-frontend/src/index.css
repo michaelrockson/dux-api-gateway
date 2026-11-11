@@ -24,6 +24,7 @@
   --color-success: oklch(0.52 0.14 155);
   --color-success-soft: oklch(0.95 0.05 155);
   --color-success-strong: oklch(0.32 0.09 155);
+  --color-info: oklch(0.45 0.16 255);
   --color-warning: oklch(0.42 0.09 60);
   --color-warning-border: oklch(0.85 0.06 60);
 

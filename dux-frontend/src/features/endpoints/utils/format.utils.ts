@@ -9,7 +9,7 @@ export const capitalise = (text = ""): string =>
 
 export function temperature(value: unknown, units?: string): string {
   const n = Number(value);
-  if (!Number.isFinite(n)) return "—";
+  if (!Number.isFinite(n)) return "-";
   if (units === "imperial") return `${Math.round(n)}°F`;
   if (units === "metric") return `${Math.round(n)}°C`;
   return `${n.toFixed(1)} K`;
@@ -17,6 +17,6 @@ export function temperature(value: unknown, units?: string): string {
 
 export function windSpeed(value: unknown, units?: string): string {
   const n = Number(value);
-  if (!Number.isFinite(n)) return "—";
+  if (!Number.isFinite(n)) return "-";
   return `${n} ${units === "imperial" ? "mph" : "m/s"}`;
 }

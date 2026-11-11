@@ -1,4 +1,4 @@
-# Dux Gateway — frontend
+# Dux Gateway frontend
 
 React 19 + TypeScript + Vite + Tailwind v4 demo UI for the Dux API gateway:
 choose an endpoint, fill in the details, press Go.
@@ -62,8 +62,8 @@ Dependencies point one way: `lookup` → `endpoints`, and the page wires in
 
 | UI | Gateway |
 |---|---|
-| Endpoint menu | `ENDPOINTS` — `path` is relative to `VITE_API_BASE_URL` |
-| Fields under the bar | `params` — `id` is the query-string name |
+| Endpoint menu | `ENDPOINTS`: `path` is relative to `VITE_API_BASE_URL` |
+| Fields under the bar | `params`: `id` is the query-string name |
 | "Add option" | params without `required` |
 | Readable view | `toView(details[responseKey], values)` |
 | Raw data | the full JSON body |
@@ -82,5 +82,5 @@ view. Leave `toView` out and the card shows Raw data only.
 
 - **Flights and Farm** have no params or readable view yet; they show Raw data.
 - **Weather** takes latitude and longitude, not a city name.
-- **Key storage** is `sessionStorage` (this tab only) — see
+- **Key storage** is `sessionStorage` (this tab only); see
   `features/access-key/services/access-key.storage.ts`.

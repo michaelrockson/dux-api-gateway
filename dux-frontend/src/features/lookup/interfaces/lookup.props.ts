@@ -5,6 +5,7 @@ import type {
   Param,
   ParamValues,
 } from "@/features/endpoints";
+import type { Pagination } from "../hooks/usePagination";
 import type { MessageTone, ResultState } from "../types/lookup.types";
 
 export interface ParamsPanelProps {
@@ -46,6 +47,15 @@ export interface ResultHeroProps {
 
 export interface ResultListProps {
   view: ListView;
+}
+
+export interface ResultRawProps {
+  raw: unknown;
+}
+
+export interface ResultPagerProps {
+  pagination: Pagination<unknown>;
+  noun: string;
 }
 
 export interface ResultMessageProps {

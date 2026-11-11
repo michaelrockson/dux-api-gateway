@@ -1,20 +1,16 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { ResultCardProps } from "../interfaces/lookup.props";
 import { toResultView } from "../services/lookup.service";
-import type { ResultState, ResultViewMode } from "../types/lookup.types";
+import type { ResultState } from "../types/lookup.types";
 import { ResultHero } from "./ResultHero";
 import { ResultList } from "./ResultList";
 import { ResultMessage } from "./ResultMessage";
-
-const VIEW_MODES: { id: ResultViewMode; label: string }[] = [
-  { id: "readable", label: "Readable" },
-  { id: "raw", label: "Raw data" },
-];
+import { ResultRaw } from "./ResultRaw";
 
 function statusLine(result: ResultState): string {
   switch (result.status) {
     case "success":
-      return `${result.httpStatus} OK`;
+      return "OK";
     case "loading":
       return "Looking it up…";
     case "error":
@@ -27,7 +23,6 @@ function statusLine(result: ResultState): string {
 }
 
 export function ResultCard({ endpoint, result, ready }: ResultCardProps) {
-  const [mode, setMode] = useState<ResultViewMode>("readable");
   const success = result.status === "success" ? result : null;
 
   const view = useMemo(
@@ -35,7 +30,8 @@ export function ResultCard({ endpoint, result, ready }: ResultCardProps) {
       success ? toResultView(endpoint, success.data, success.values) : null,
     [endpoint, success],
   );
-  const showRaw = !!success && (mode === "raw" || !view);
+  // Raw data is only a fallback for endpoints with no readable view.
+  const showRaw = !!success && !view;
 
   return (
     <section
@@ -49,30 +45,7 @@ export function ResultCard({ endpoint, result, ready }: ResultCardProps) {
           <h2 className="m-0 font-display text-[19px] font-bold">
             {endpoint.name}
           </h2>
-          <span className="text-[13px] text-muted-foreground">
-            {statusLine(result)}
-          </span>
         </div>
-        {success && view && (
-          <div
-            role="radiogroup"
-            aria-label="View"
-            className="flex rounded-lg bg-muted p-[3px]"
-          >
-            {VIEW_MODES.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                role="radio"
-                aria-checked={mode === option.id}
-                onClick={() => setMode(option.id)}
-                className={`min-h-[38px] rounded-md px-3.5 text-sm font-semibold ${mode === option.id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {result.status === "idle" &&
@@ -106,11 +79,7 @@ export function ResultCard({ endpoint, result, ready }: ResultCardProps) {
 
       {!showRaw && view?.kind === "hero" && <ResultHero view={view} />}
       {!showRaw && view?.kind === "list" && <ResultList view={view} />}
-      {showRaw && (
-        <pre className="m-0 overflow-x-auto bg-foreground p-5 font-mono text-[13px] leading-relaxed text-background">
-          {JSON.stringify(success?.raw, null, 2)}
-        </pre>
-      )}
+      {showRaw && <ResultRaw raw={success?.raw} />}
     </section>
   );
 }

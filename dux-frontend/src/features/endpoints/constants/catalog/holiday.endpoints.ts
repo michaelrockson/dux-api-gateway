@@ -101,10 +101,10 @@ export const HOLIDAY_ENDPOINTS: Endpoint[] = [
     toView: (d) => ({
       kind: "hero",
       kicker: d?.region ?? "",
-      big: d?.commonName ?? "—",
+      big: d?.commonName ?? "-",
       sub: d?.officialName ?? "",
       stats: [
-        { label: "Code", value: d?.countryCode ?? "—" },
+        { label: "Code", value: d?.countryCode ?? "-" },
         {
           label: "Borders",
           value:

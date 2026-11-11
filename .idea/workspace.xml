@@ -8,7 +8,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cdc566d2-2c95-414f-b158-2e7972a2cbbd" name="Changes" comment="chore: setup frontend">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-backend/.yarn/install-state.gz" beforeDir="false" afterPath="$PROJECT_DIR$/dux-backend/.yarn/install-state.gz" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-backend/.yarnrc.yml" beforeDir="false" afterPath="$PROJECT_DIR$/dux-backend/.yarnrc.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/dux-backend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-backend/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/dux-backend/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/access-key/components/AccessKeyButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/access-key/components/AccessKeyButton.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/access-key/components/AccessKeyDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/access-key/components/AccessKeyDialog.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/access-key/constants/access-key.constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/access-key/constants/access-key.constants.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/access-key/interfaces/access-key.interface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/access-key/interfaces/access-key.interface.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/access-key/utils/access-key.utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/access-key/utils/access-key.utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/components/EndpointMenu.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/components/EndpointMenu.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/constants/catalog/aviation.endpoints.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/constants/catalog/aviation.endpoints.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/constants/catalog/currency.endpoints.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/constants/catalog/currency.endpoints.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/constants/catalog/holiday.endpoints.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/constants/catalog/holiday.endpoints.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/constants/catalog/sports.endpoints.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/constants/catalog/sports.endpoints.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/constants/catalog/weather.endpoints.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/constants/catalog/weather.endpoints.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/interfaces/endpoint.interface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/interfaces/endpoint.interface.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/utils/format.utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/endpoints/utils/format.utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/lookup/components/ParamsPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/lookup/components/ParamsPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/lookup/components/ResultCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/lookup/components/ResultCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/lookup/components/ResultList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/lookup/components/ResultList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/lookup/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/lookup/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/lookup/interfaces/lookup.props.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/lookup/interfaces/lookup.props.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/features/lookup/types/lookup.types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/features/lookup/types/lookup.types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dux-frontend/src/pages/GatewayPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/dux-frontend/src/pages/GatewayPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -161,7 +188,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-WS-242.26775.11" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-WS-262.10315.144" />
       </set>
     </attachedChunks>
   </component>
@@ -197,6 +224,7 @@
       <workItem from="1786235187203" duration="5050000" />
       <workItem from="1787412930678" duration="148000" />
       <workItem from="1787432326524" duration="355000" />
+      <workItem from="1794427734457" duration="3000000" />
     </task>
     <task id="LOCAL-00001" summary="chore: clean up">
       <option name="closed" value="true" />

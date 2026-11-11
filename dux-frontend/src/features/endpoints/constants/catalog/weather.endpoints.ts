@@ -39,7 +39,7 @@ export const WEATHER_ENDPOINTS: Endpoint[] = [
       sub: capitalise(d?.weather?.[0]?.description),
       stats: [
         { label: "Feels like", value: temperature(d?.main?.feels_like, v.units) },
-        { label: "Humidity", value: d?.main?.humidity != null ? `${d.main.humidity}%` : "—" },
+        { label: "Humidity", value: d?.main?.humidity != null ? `${d.main.humidity}%` : "-" },
         { label: "Wind", value: windSpeed(d?.wind?.speed, v.units) },
       ],
     }),
@@ -57,7 +57,7 @@ export const WEATHER_ENDPOINTS: Endpoint[] = [
       caption: d?.city?.name ? `${d.city.name} · every 3 hours` : "Every 3 hours",
       rows: asArray<UpstreamPayload>(d?.list).map((x) => ({
         main: String(x?.dt_txt ?? "").slice(0, 16),
-        sub: `${capitalise(x?.weather?.[0]?.description)} · humidity ${x?.main?.humidity ?? "—"}%`,
+        sub: `${capitalise(x?.weather?.[0]?.description)} · humidity ${x?.main?.humidity ?? "-"}%`,
         right: temperature(x?.main?.temp, v.units),
       })),
     }),

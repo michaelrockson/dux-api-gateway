@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import {
   CheckIcon,
-  ChevronRightIcon,
   SearchIcon,
 } from "@/components/icons";
 import { GROUPS } from "../constants/endpoints.constants";
@@ -140,16 +139,11 @@ export function EndpointMenu({ current, onPick, onClose }: EndpointMenuProps) {
                       {describeRequirements(endpoint)}
                     </span>
                   </span>
-                  {selected ? (
+                  {selected && (
                     <span className="inline-flex flex-none items-center gap-1 text-[13px] font-semibold text-primary">
                       <CheckIcon size={16} />
                       Chosen
                     </span>
-                  ) : (
-                    <ChevronRightIcon
-                      size={18}
-                      className="flex-none text-muted-foreground"
-                    />
                   )}
                 </button>
               );

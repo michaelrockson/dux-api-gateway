@@ -10,7 +10,7 @@ export function AccessKeyButton({ attached, onClick }: AccessKeyButtonProps) {
       className="inline-flex min-h-11 items-center gap-2 rounded-[10px] border border-border bg-card pl-3 pr-3.5 text-sm font-medium text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <KeyIcon size={18} />
-      {attached ? "Key attached" : "Get a key"}
+      {attached ? "Key in use" : "Get a key"}
       {attached && (
         <span className="size-2 rounded-full bg-success" aria-hidden="true" />
       )}

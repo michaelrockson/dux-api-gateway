@@ -16,7 +16,7 @@ export function ParamsPanel({
   if (endpoint.params.length === 0) {
     return (
       <p className="m-0 pl-1 text-sm text-muted-foreground">
-        Nothing to fill in for this one — just press Go.
+        Nothing to fill in for this one. Just press Go.
       </p>
     );
   }

@@ -65,12 +65,14 @@ export function GatewayPage() {
       </AppHeader>
 
       <main className="mx-auto flex max-w-[880px] flex-col gap-7 px-6 pb-20 pt-12">
-        <section className="flex flex-col items-center gap-3 text-center">
+        <section className="flex flex-col items-center gap-6 text-center">
           <h1 className="m-0 font-display text-[clamp(44px,7vw,68px)] font-medium leading-none tracking-[-0.03em]">
-            Look it up<span className="text-primary">.</span>
+            Dux API Gateway
           </h1>
           <p className="m-0 text-base text-muted-foreground">
-            Choose what you want, fill in the details, press Go.
+            Get all your weather, news, exchange rates, public holidays, sports,
+            flights and farm data together, so you never sign up to seven
+            different services. Your key is free.
           </p>
         </section>
 

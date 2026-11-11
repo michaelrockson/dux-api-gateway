@@ -8,7 +8,7 @@ import {
   requestGatewayKey,
 } from "../services/access-key.service";
 import type { CopyTarget } from "../types/access-key.types";
-import { copyText, maskKey, shortenKey } from "../utils/access-key.utils";
+import { copyText, maskKey } from "../utils/access-key.utils";
 
 export function AccessKeyDialog({
   open,
@@ -112,13 +112,21 @@ export function AccessKeyDialog({
         <div className="flex flex-col gap-5 px-6 pb-6 pt-2">
           <span className="inline-flex items-center gap-1.5 self-start rounded-full bg-success-soft px-2.5 py-1.5 text-sm font-semibold text-success-strong">
             <CheckIcon size={14} />
-            {access.attached ? "Key attached" : "Your key is ready"}
+            {access.attached ? "Your key is in use" : "Your key is ready"}
           </span>
+
+          <p className="m-0 text-base leading-relaxed text-muted-foreground">
+            {access.attached
+              ? "You’re all set. We’re using this key automatically every time you look something up."
+              : "Think of this key as a password for looking things up. Press “Use this key” and we’ll take care of the rest."}
+          </p>
 
           <div className="flex flex-col gap-2">
             <h3 className="m-0 font-display text-base font-bold">Your key</h3>
             <div className="flex items-center gap-1.5 rounded-[10px] border border-border bg-muted py-1.5 pl-3.5 pr-1.5">
-              <span className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-[14.5px]">
+              <span
+                className={`min-w-0 flex-1 font-mono text-[14.5px] ${reveal ? "break-all py-1.5" : "truncate"}`}
+              >
                 {reveal ? access.key : maskKey(access.key)}
               </span>
               <button
@@ -137,15 +145,33 @@ export function AccessKeyDialog({
                 {copied === "key" ? "Copied" : "Copy"}
               </button>
             </div>
-            <p className="m-0 text-[13.5px] text-warning">
-              Save it somewhere private — the gateway can’t show it to you
-              again.
+            <p className="m-0 text-[13.5px] text-info">
+              Keep a copy somewhere safe and don’t share it. We can’t show it
+              to you again later.
             </p>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <h3 id="send-title" className="m-0 font-display text-base font-bold">
-              How should we send it?
+          <button
+            type="button"
+            onClick={attach}
+            className="min-h-[52px] rounded-[10px] bg-primary text-base font-semibold text-primary-foreground hover:brightness-110"
+          >
+            {access.attached ? "Done" : "Use this key"}
+          </button>
+
+          <details className="group rounded-xl border border-border">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3.5 text-sm font-medium text-muted-foreground hover:text-foreground [&::-webkit-details-marker]:hidden">
+              <span>Settings</span>
+              <span
+                aria-hidden="true"
+                className="text-xs transition-transform group-open:rotate-180"
+              >
+                ▼
+              </span>
+            </summary>
+            <div className="flex flex-col gap-2 px-3.5 pb-3.5">
+            <h3 id="send-title" className="m-0 text-sm font-semibold">
+              How the key is sent
             </h3>
             <div
               role="radiogroup"
@@ -164,10 +190,10 @@ export function AccessKeyDialog({
                       access.setMode(option.id);
                       setCopied(null);
                     }}
-                    className={`flex items-start gap-3 rounded-xl border-[1.5px] p-3.5 text-left text-foreground ${on ? "border-primary bg-accent/30" : "border-border bg-card hover:bg-muted"}`}
+                    className={`flex items-center gap-3 rounded-xl border-[1.5px] p-3.5 text-left text-foreground ${on ? "border-primary bg-accent/30" : "border-border bg-card hover:bg-muted"}`}
                   >
                     <span
-                      className={`mt-px flex size-5 flex-none items-center justify-center rounded-full border-2 ${on ? "border-primary" : "border-border-strong"}`}
+                      className={`flex size-5 flex-none items-center justify-center rounded-full border-2 ${on ? "border-primary" : "border-border-strong"}`}
                     >
                       {on && <span className="size-2.5 rounded-full bg-primary" />}
                     </span>
@@ -175,35 +201,20 @@ export function AccessKeyDialog({
                       <span className="text-[15px] font-semibold">
                         {option.title}
                       </span>
-                      <span className="text-sm leading-snug text-muted-foreground">
-                        {option.description}
-                      </span>
-                      <code className="mt-1 max-w-full self-start overflow-x-auto whitespace-nowrap rounded-md bg-muted px-2 py-1 font-mono text-[12.5px]">
-                        {headerPreview(shortenKey(access.key), option.id)}
-                      </code>
                     </span>
                   </button>
                 );
               })}
             </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2 pt-1">
             <button
               type="button"
               onClick={() => copy("header")}
-              className="min-h-[50px] flex-[1_1_140px] rounded-[10px] border border-border bg-card text-[15px] font-semibold hover:bg-muted"
+              className="min-h-11 self-start rounded-[10px] border border-border bg-card px-3.5 text-sm font-medium hover:bg-muted"
             >
-              {copied === "header" ? "Header copied" : "Copy header"}
+              {copied === "header" ? "Copied" : "Copy as request header"}
             </button>
-            <button
-              type="button"
-              onClick={attach}
-              className="min-h-[50px] flex-[2_1_200px] rounded-[10px] bg-primary text-[15px] font-semibold text-primary-foreground hover:brightness-110"
-            >
-              Attach to my requests
-            </button>
-          </div>
+            </div>
+          </details>
 
           <button
             type="button"
@@ -213,7 +224,7 @@ export function AccessKeyDialog({
             }}
             className="self-center text-sm text-muted-foreground underline underline-offset-2 hover:text-foreground"
           >
-            Use a different key
+            Remove this key and get a new one
           </button>
         </div>
       )}

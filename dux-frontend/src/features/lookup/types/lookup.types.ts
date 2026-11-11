@@ -12,6 +12,5 @@ export type ResultState =
       values: ParamValues;
     };
 
-export type ResultViewMode = "readable" | "raw";
 
 export type MessageTone = "neutral" | "error";

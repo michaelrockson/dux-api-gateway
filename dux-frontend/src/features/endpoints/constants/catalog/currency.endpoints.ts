@@ -34,7 +34,7 @@ export const CURRENCY_ENDPOINTS: Endpoint[] = [
     toView: (d) => ({
       kind: "hero",
       kicker: `${d?.query?.amount ?? ""} ${d?.query?.from ?? ""} is`,
-      big: `${d?.result ?? "—"} ${d?.query?.to ?? ""}`,
+      big: `${d?.result ?? "-"} ${d?.query?.to ?? ""}`,
       sub: "Converted at today’s rate",
       stats: [],
     }),
@@ -100,7 +100,7 @@ export const CURRENCY_ENDPOINTS: Endpoint[] = [
           return {
             main: `USD → ${pair.slice(3)}`,
             sub: `${x.start_rate} → ${x.end_rate}`,
-            right: Number.isFinite(pct) ? `${pct > 0 ? "+" : ""}${pct}%` : "—",
+            right: Number.isFinite(pct) ? `${pct > 0 ? "+" : ""}${pct}%` : "-",
           };
         }),
       };

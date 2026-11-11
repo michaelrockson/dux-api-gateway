@@ -24,5 +24,4 @@ export type {
 export type {
   MessageTone,
   ResultState,
-  ResultViewMode,
 } from "./types/lookup.types";

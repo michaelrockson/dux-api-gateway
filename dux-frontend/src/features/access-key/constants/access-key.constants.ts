@@ -15,11 +15,9 @@ export const AUTH_MODES: AuthModeOption[] = [
   {
     id: "bearer",
     title: "Bearer token",
-    description: "The usual choice. Works with most apps and tools.",
   },
   {
     id: "header",
     title: "API key header",
-    description: "Pick this if your app asks for an “x-api-key” header.",
   },
 ];
