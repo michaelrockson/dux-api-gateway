@@ -1,75 +1,86 @@
-# React + TypeScript + Vite
+# Dux Gateway frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React 19 + TypeScript + Vite + Tailwind v4 demo UI for the Dux API gateway:
+choose an endpoint, fill in the details, press Go.
 
-Currently, two official plugins are available:
+## Run it
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+yarn install
+yarn dev        # http://localhost:5173
+yarn build      # type-check + production bundle in dist/
+yarn lint
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Start the gateway (`dux-backend`) first. The gateway sends no CORS headers, so
+in dev the browser calls `/v1` on the Vite server and Vite proxies it to the
+gateway.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| Variable | Default | Purpose |
+|---|---|---|
+| `VITE_API_BASE_URL` | `/v1` | Where the browser sends requests. Use a full URL only if that origin allows CORS. |
+| `GATEWAY_PROXY_TARGET` | `http://localhost:3000` | Dev only: where Vite forwards `/v1`. |
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Copy `.env.example` to `.env.local` to change them.
+
+## Structure
 
 ```
+src/
+├── App.tsx, main.tsx, index.css      # entry, theme tokens (@theme)
+├── config/env.ts                     # API_BASE_URL
+├── lib/http/                         # gatewayGet, GatewayError, friendlyError
+├── components/
+│   ├── icons/                        # shared stroke icons
+│   └── layout/AppHeader.tsx
+├── pages/GatewayPage.tsx             # composes the features
+└── features/
+    ├── access-key/                   # request, store and attach the API key
+    ├── endpoints/                    # endpoint catalogue, chooser bar and menu
+    └── lookup/                       # fields, the request, the result card
+```
+
+Each feature follows the same layout and is imported only through its
+`index.ts`:
+
+```
+features/<name>/
+├── components/     # React components
+├── hooks/          # stateful logic (useAccessKey, useEndpointSearch, useLookup)
+├── services/       # gateway calls, storage, pure domain logic
+├── interfaces/     # object contracts (*.interface.ts) and component props (*.props.ts)
+├── types/          # unions and aliases (*.types.ts)
+├── constants/      # static data (where needed)
+├── utils/          # small pure helpers (where needed)
+└── index.ts        # the feature's public exports
+```
+
+Dependencies point one way: `lookup` → `endpoints`, and the page wires in
+`access-key`. Features never import each other's internals.
+
+## How it maps to the gateway
+
+| UI | Gateway |
+|---|---|
+| Endpoint menu | `ENDPOINTS`: `path` is relative to `VITE_API_BASE_URL` |
+| Fields under the bar | `params`: `id` is the query-string name |
+| "Add option" | params without `required` |
+| Readable view | `toView(details[responseKey], values)` |
+| Raw data | the full JSON body |
+| Request a key | `GET /v1/auth/gateway-key` → `details.ApiKeyResponse.apiKey` |
+| Bearer token / API key header | `Authorization: Bearer gw_…` or `x-api-key: gw_…` |
+
+## Adding an endpoint
+
+Add one object to the matching file in
+`src/features/endpoints/constants/catalog/`. It sets the menu name and
+description, the `params` (add `choices` for a segmented control), the
+`responseKey` under `details`, and a `toView` that returns a `hero` or `list`
+view. Leave `toView` out and the card shows Raw data only.
+
+## Known gaps
+
+- **Flights and Farm** have no params or readable view yet; they show Raw data.
+- **Weather** takes latitude and longitude, not a city name.
+- **Key storage** is `sessionStorage` (this tab only); see
+  `features/access-key/services/access-key.storage.ts`.
