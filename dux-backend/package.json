@@ -1,8 +1,8 @@
 {
-  "name": "Universal-API-Gateway",
+  "name": "dux-api-gateway",
   "version": "1.0.0",
   "main": "server.js",
-  "repository": "https://github.com/michaelrockson/Universal-API-Gateway.git",
+  "repository": "https://github.com/michaelrockson/dux-api-gateway.git",
   "author": "michaelrockson",
   "license": "MIT",
   "type": "module",
