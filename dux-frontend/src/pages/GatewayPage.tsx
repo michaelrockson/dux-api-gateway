@@ -127,6 +127,7 @@ export function GatewayPage() {
           key={endpoint.id}
           endpoint={endpoint}
           result={lookup.result}
+          values={lookup.values}
           ready={lookup.ready}
         />
       </main>

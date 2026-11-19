@@ -1,4 +1,4 @@
-import express, { type Express } from "express";
+import express, {type Express, Router} from "express";
 import morgan from "morgan";
 import { useGatewayRouters } from "./modules/routes.registry.js";
 import { bootstrapSecrets } from "./bootstrap/providers/infisical.provider.js";
@@ -12,9 +12,10 @@ import { SystemEnvs } from "./bootstrap/envs/system.envs.js";
 import { ModuleEnvs } from "./bootstrap/envs/module.envs.js";
 import { WinstonLogger } from "./app/logger/winston.logger.js";
 import { ControllerResponseHandler } from "./app/http/handlers/response.handler.js";
-import { SharedDependencies } from "./bootstrap/bootstrap.types.js";
+import {GatewayControllers, SharedDependencies} from "./bootstrap/bootstrap.types.js";
 import { provideGatewayMiddleware } from "./app/middleware/middleware.provider.js";
 import { providePrismaClient } from "./app/db/prisma.js";
+import {MiddlewareService} from "./app/middleware/middleware.service.js";
 
 async function startServer(): Promise<void> {
   try {
@@ -39,14 +40,14 @@ async function startServer(): Promise<void> {
       prismaClient,
     };
 
-    const controllers = bootGatewayControllers(sharedDependencies);
+    const controllers: GatewayControllers = bootGatewayControllers(sharedDependencies);
 
     const server: Express = express();
 
     const port: number = Number(systemEnvs.port) || 3000;
     const environment: string = systemEnvs.environment ?? "dev";
-    const middleware = provideGatewayMiddleware(redisClient, prismaClient);
-    const gatewayRouter = useGatewayRouters(controllers, middleware);
+    const middleware: MiddlewareService = provideGatewayMiddleware(redisClient, prismaClient);
+    const gatewayRouter: Router = useGatewayRouters(controllers, middleware);
 
     server.use(morgan("combined", { stream: createMorganStream(logger) }));
     server.use(express.json());

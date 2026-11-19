@@ -3,13 +3,13 @@ import {
   CheckIcon,
   SearchIcon,
 } from "@/components/icons";
-import { GROUPS } from "../constants/endpoints.constants";
-import { useEndpointSearch } from "../hooks/useEndpointSearch";
-import type { EndpointMenuProps } from "../interfaces/endpoint.props";
+import { GROUPS } from "@/features/endpoints";
+import { useEndpointSearch } from "@/features/endpoints";
+import type { EndpointMenuProps } from "@/features/endpoints";
 import {
   describeRequirements,
   getEndpointsByGroup,
-} from "../services/endpoint-catalog.service";
+} from "@/features/endpoints";
 import { GroupIcon } from "./GroupIcon";
 
 export function EndpointMenu({ current, onPick, onClose }: EndpointMenuProps) {
@@ -36,7 +36,7 @@ export function EndpointMenu({ current, onPick, onClose }: EndpointMenuProps) {
       aria-label="Choose what to look up"
       className="overflow-hidden rounded-[14px] border border-border bg-card shadow-xl motion-safe:animate-rise"
     >
-      <div className="flex items-center gap-2.5 border-b border-border py-3 pl-[18px] pr-3">
+      <div className="flex items-center gap-2.5 border-b border-border py-3 pl-4.5 pr-3">
         <SearchIcon size={18} className="flex-none text-muted-foreground" />
         <label htmlFor="endpoint-search" className="sr-only">
           Search
@@ -91,7 +91,7 @@ export function EndpointMenu({ current, onPick, onClose }: EndpointMenuProps) {
           </nav>
         )}
 
-        <div className="flex min-w-0 flex-[999_1_360px] flex-col gap-3 p-[18px] pb-3.5">
+        <div className="flex min-w-0 flex-[999_1_360px] flex-col gap-3 p-4.5 pb-3.5">
           <div className="flex flex-col gap-0.5 px-1">
             <h3 className="m-0 font-display text-xl font-bold">
               {searching

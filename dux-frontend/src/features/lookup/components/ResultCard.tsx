@@ -1,11 +1,10 @@
 import { useMemo } from "react";
 import type { ResultCardProps } from "../interfaces/lookup.props";
-import { toResultView } from "../services/lookup.service";
+import { toResultView, viewValues } from "../services/lookup.service";
 import type { ResultState } from "../types/lookup.types";
 import { ResultHero } from "./ResultHero";
 import { ResultList } from "./ResultList";
 import { ResultMessage } from "./ResultMessage";
-import { ResultRaw } from "./ResultRaw";
 
 function statusLine(result: ResultState): string {
   switch (result.status) {
@@ -22,16 +21,24 @@ function statusLine(result: ResultState): string {
   }
 }
 
-export function ResultCard({ endpoint, result, ready }: ResultCardProps) {
+export function ResultCard({
+  endpoint,
+  result,
+  values,
+  ready,
+}: ResultCardProps) {
   const success = result.status === "success" ? result : null;
 
-  const view = useMemo(
-    () =>
-      success ? toResultView(endpoint, success.data, success.values) : null,
-    [endpoint, success],
+  // Display-only choices (e.g. °C / °F / K) come from the live form values,
+  // so switching them re-renders the fetched data without a new request.
+  const shown = useMemo(
+    () => (success ? viewValues(endpoint, success.values, values) : null),
+    [endpoint, success, values],
   );
-  // Raw data is only a fallback for endpoints with no readable view.
-  const showRaw = !!success && !view;
+  const view = useMemo(
+    () => (success && shown ? toResultView(endpoint, success.data, shown) : null),
+    [endpoint, success, shown],
+  );
 
   return (
     <section
@@ -77,9 +84,8 @@ export function ResultCard({ endpoint, result, ready }: ResultCardProps) {
         />
       )}
 
-      {!showRaw && view?.kind === "hero" && <ResultHero view={view} />}
-      {!showRaw && view?.kind === "list" && <ResultList view={view} />}
-      {showRaw && <ResultRaw raw={success?.raw} />}
+      {view?.kind === "hero" && <ResultHero view={view} />}
+      {view?.kind === "list" && <ResultList view={view} />}
     </section>
   );
 }

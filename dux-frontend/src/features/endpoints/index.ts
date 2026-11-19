@@ -16,6 +16,7 @@ export {
   ENDPOINTS,
   GROUPS,
 } from "./constants/endpoints.constants";
+export { toFallbackView } from "./utils/fallback-view.utils";
 export type {
   Choice,
   Endpoint,

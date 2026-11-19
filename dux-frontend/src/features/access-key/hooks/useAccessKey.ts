@@ -3,13 +3,13 @@ import { EMPTY_ACCESS_KEY } from "../constants/access-key.constants";
 import type {
   AccessKeyState,
   StoredAccessKey,
-} from "../interfaces/access-key.interface";
+} from "@/features/access-key";
 import {
   loadAccessKey,
   removeAccessKey,
   saveAccessKey,
 } from "../services/access-key.storage";
-import type { AuthMode } from "../types/access-key.types";
+import type { AuthMode } from "@/features/access-key";
 
 export function useAccessKey(): AccessKeyState {
   const [state, setState] = useState<StoredAccessKey>(

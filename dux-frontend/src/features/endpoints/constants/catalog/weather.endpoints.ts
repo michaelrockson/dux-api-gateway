@@ -3,23 +3,15 @@ import type { UpstreamPayload } from "../../types/endpoint.types";
 import {
   asArray,
   capitalise,
-  temperature,
-  windSpeed,
+  temperatureFromKelvin,
+  windSpeedFromMs,
 } from "../../utils/format.utils";
+import { temperatureUnits } from "./shared.params";
 
 const lat: Param = { id: "lat", label: "Latitude", required: true, example: "51.5074", placeholder: "51.5074" };
 const lon: Param = { id: "lon", label: "Longitude", required: true, example: "-0.1278", placeholder: "-0.1278" };
-const units: Param = {
-  id: "units",
-  label: "Show in",
-  description: "Temperature scale",
-  defaultValue: "metric",
-  choices: [
-    { value: "metric", label: "°C" },
-    { value: "imperial", label: "°F" },
-    { value: "standard", label: "K" },
-  ],
-};
+// Not sent upstream, so the API answers in its default Kelvin and m/s.
+const units = temperatureUnits;
 const lang: Param = { id: "lang", label: "Language", placeholder: "e.g. fr", description: "Language for the description" };
 const cnt: Param = { id: "cnt", label: "Results", placeholder: "e.g. 10", description: "How many results to return" };
 
@@ -35,12 +27,12 @@ export const WEATHER_ENDPOINTS: Endpoint[] = [
     toView: (d, v) => ({
       kind: "hero",
       kicker: d?.name ? `${d.name}, right now` : "Right now",
-      big: temperature(d?.main?.temp, v.units),
+      big: temperatureFromKelvin(d?.main?.temp, v.units),
       sub: capitalise(d?.weather?.[0]?.description),
       stats: [
-        { label: "Feels like", value: temperature(d?.main?.feels_like, v.units) },
+        { label: "Feels like", value: temperatureFromKelvin(d?.main?.feels_like, v.units) },
         { label: "Humidity", value: d?.main?.humidity != null ? `${d.main.humidity}%` : "-" },
-        { label: "Wind", value: windSpeed(d?.wind?.speed, v.units) },
+        { label: "Wind", value: windSpeedFromMs(d?.wind?.speed, v.units) },
       ],
     }),
   },
@@ -58,7 +50,7 @@ export const WEATHER_ENDPOINTS: Endpoint[] = [
       rows: asArray<UpstreamPayload>(d?.list).map((x) => ({
         main: String(x?.dt_txt ?? "").slice(0, 16),
         sub: `${capitalise(x?.weather?.[0]?.description)} · humidity ${x?.main?.humidity ?? "-"}%`,
-        right: temperature(x?.main?.temp, v.units),
+        right: temperatureFromKelvin(x?.main?.temp, v.units),
       })),
     }),
   },

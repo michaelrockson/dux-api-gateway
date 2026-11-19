@@ -18,6 +18,11 @@ export interface Param {
   description?: string;
   choices?: Choice[];
   defaultValue?: string;
+  /**
+   * Never sent upstream: it only changes how the result is shown, so
+   * switching it re-renders the data already fetched instead of refetching.
+   */
+  displayOnly?: boolean;
 }
 
 export interface Endpoint {

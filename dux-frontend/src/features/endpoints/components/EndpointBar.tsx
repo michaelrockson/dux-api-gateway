@@ -1,5 +1,5 @@
 import { ChevronDownIcon, SearchIcon } from "@/components/icons";
-import type { EndpointBarProps } from "../interfaces/endpoint.props";
+import type { EndpointBarProps } from "@/features/endpoints";
 import { GroupIcon } from "./GroupIcon";
 
 export function EndpointBar({

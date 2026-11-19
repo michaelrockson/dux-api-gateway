@@ -38,6 +38,8 @@ export interface AddOptionMenuProps {
 export interface ResultCardProps {
   endpoint: Endpoint;
   result: ResultState;
+  /** Current form values; display-only ones restyle the result live. */
+  values: ParamValues;
   ready: boolean;
 }
 
@@ -47,10 +49,6 @@ export interface ResultHeroProps {
 
 export interface ResultListProps {
   view: ListView;
-}
-
-export interface ResultRawProps {
-  raw: unknown;
 }
 
 export interface ResultPagerProps {
